@@ -1,7 +1,10 @@
 package com.example.justjava;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     int quantity = 0;
+    int pricePerCup = 5;
 
     /**
      * This method for increse the quantity.
@@ -42,26 +46,43 @@ public class MainActivity extends AppCompatActivity {
      * This method is called when the order button is clicked.
      */
     public void submitOrder(View view) {
+        EditText inputName = (EditText)findViewById(R.id.enter_name_edit_text_view);
+        String userNameInput = inputName.getText().toString();
+        boolean toppingCheckBox = ((CheckBox) findViewById(R.id.topping_checkbox)).isChecked();
+        boolean chocolateCheckBox = ((CheckBox) findViewById(R.id.chocolate_checkbox)).isChecked();
         int price = calculatePrice();
-        displayMessage(createOrderSummary(price));
+        Log.v("MainActivity", "The price is " + price);
+        displayMessage(createOrderSummary(userNameInput, price, toppingCheckBox, chocolateCheckBox));
     }
 
     /**
      * Calculates the price of the order.
      */
     private int calculatePrice() {
-        return quantity * 5;
+        int modifiedPricePerCup = pricePerCup;
+        boolean toppingCheckBox = ((CheckBox) findViewById(R.id.topping_checkbox)).isChecked();
+        if (toppingCheckBox == true){
+            modifiedPricePerCup += 1;
+        }
+        boolean chocolateCheckBox = ((CheckBox) findViewById(R.id.chocolate_checkbox)).isChecked();
+        if(chocolateCheckBox == true){
+            modifiedPricePerCup += 2;
+        }
+        return quantity * modifiedPricePerCup;
     }
 
     /**
      * Create order summary
      *
+     * @param toppingCheckBox is whether or not the user wants whipped cream topping
+     * @param chocolateCheckBox is whether or not the user wants chocolate topping
      * @param price of the order
      * @return text summary
      */
-
-    private String createOrderSummary(int price){
-        String priceMessage = "Sergey Odintsov";
+    private String createOrderSummary(String userNameInput, int price, boolean toppingCheckBox, boolean chocolateCheckBox){
+        String priceMessage = userNameInput;;
+        priceMessage += "\nAdd whiphed cream? " + toppingCheckBox;
+        priceMessage += "\nAdd chocolate? " + chocolateCheckBox;
         priceMessage += "\nQuantity = "+ quantity;
         priceMessage += "\nTotal $" + price;
         priceMessage += "\nThank you!";
