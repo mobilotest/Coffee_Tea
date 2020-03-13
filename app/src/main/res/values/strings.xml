@@ -4,9 +4,9 @@
     <string name="topping">Topping</string>
     <string name="quantity">Quantity</string>
     <string name="order">ORDER</string>
-    <string name="quantity_of_cups">1</string>
-    <string name="plus">+</string>
-    <string name="minus">-</string>
+    <string name="quantity_of_cups" translatable="false">1</string>
+    <string name="plus" translatable="false">+</string>
+    <string name="minus" translatable="false">-</string>
     <string name="name">Name:\u0020 <xliff:g id="name" example="Amy">%s</xliff:g> </string>
     <string name="cream">Whipped cream</string>
     <string name="choco">Chocolate</string>
