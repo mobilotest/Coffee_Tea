@@ -1,11 +1,14 @@
 package com.example.justjava;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,13 +23,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    int quantity = 0;
+    int quantity = 1;
     int pricePerCup = 5;
+    String subject = "Coffee & Tea order for ";
 
     /**
      * This method for increse the quantity.
      */
     public void increse(View view) {
+        if(quantity == 100){
+            Toast.makeText(this, getText(R.string.more_100), Toast.LENGTH_SHORT).show();
+            return;
+        }
         quantity++;
         TextView quantityTextView = (TextView) findViewById(R.id.quantity_text_view);
         quantityTextView.setText("" + quantity);
@@ -36,6 +44,10 @@ public class MainActivity extends AppCompatActivity {
      * This method for decrese the quantity.
      */
     public void decrese(View view) {
+        if(quantity == 1){
+            Toast.makeText(this, getText(R.string.less_1), Toast.LENGTH_SHORT).show();
+            return;
+        }
         quantity--;
         TextView quantityTextView = (TextView) findViewById(R.id.quantity_text_view);
         quantityTextView.setText("" + quantity);
@@ -46,13 +58,14 @@ public class MainActivity extends AppCompatActivity {
      * This method is called when the order button is clicked.
      */
     public void submitOrder(View view) {
+
         EditText inputName = (EditText)findViewById(R.id.enter_name_edit_text_view);
         String userNameInput = inputName.getText().toString();
         boolean toppingCheckBox = ((CheckBox) findViewById(R.id.topping_checkbox)).isChecked();
         boolean chocolateCheckBox = ((CheckBox) findViewById(R.id.chocolate_checkbox)).isChecked();
         int price = calculatePrice();
         Log.v("MainActivity", "The price is " + price);
-        displayMessage(createOrderSummary(userNameInput, price, toppingCheckBox, chocolateCheckBox));
+        composeEmail(createOrderSummary(userNameInput, price, toppingCheckBox, chocolateCheckBox), userNameInput);
     }
 
     /**
@@ -80,13 +93,27 @@ public class MainActivity extends AppCompatActivity {
      * @return text summary
      */
     private String createOrderSummary(String userNameInput, int price, boolean toppingCheckBox, boolean chocolateCheckBox){
-        String priceMessage = userNameInput;;
-        priceMessage += "\nAdd whiphed cream? " + toppingCheckBox;
-        priceMessage += "\nAdd chocolate? " + chocolateCheckBox;
-        priceMessage += "\nQuantity = "+ quantity;
-        priceMessage += "\nTotal $" + price;
-        priceMessage += "\nThank you!";
+        String priceMessage = getString(R.string.name, userNameInput);
+        priceMessage += "\n" + getString(R.string.add_whip) + toppingCheckBox;
+        priceMessage += "\n" + getString(R.string.add_choco) + chocolateCheckBox;
+        priceMessage += "\n"+ getString(R.string.total_quantity) + quantity;
+        priceMessage += "\n" + getString(R.string.total_price) + price;
+        priceMessage += "\n"+ getString(R.string.thanks);
         return priceMessage;
+    }
+
+    /**
+     * This method launch the Gmail intent and populates email's Subject and Body.
+     */
+
+    public void composeEmail(String priceMessage, String userNameInput) {
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject +" "+ userNameInput);
+        intent.putExtra(Intent.EXTRA_TEXT, priceMessage);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
     /**
@@ -95,13 +122,5 @@ public class MainActivity extends AppCompatActivity {
     private void displayQuantity(int number) {
         TextView quantityTextView = (TextView) findViewById(R.id.quantity_text_view);
         quantityTextView.setText("" + number);
-    }
-
-    /**
-     * This method displays the given text on the screen.
-     */
-    private void displayMessage(String message) {
-        TextView orderSummaryTextView = (TextView) findViewById(R.id.order_summary_text_view);
-        orderSummaryTextView.setText(message);
     }
 }
